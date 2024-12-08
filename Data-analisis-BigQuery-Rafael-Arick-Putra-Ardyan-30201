@@ -1,0 +1,34 @@
+WITH penjualan_filtered AS (
+  SELECT 
+    p.ProdukID,
+    p.ProduksiID,
+    j.Tanggal,
+    j.Jumlah
+  FROM 
+    `rafael-arick-putra-ardyan.perusahaan.produksi_rafael` p
+  JOIN 
+    `rafael-arick-putra-ardyan.perusahaan.penjualan_rafael` j
+  ON 
+    p.ProdukID = j.ProdukID
+  WHERE 
+    EXTRACT(YEAR FROM j.Tanggal) = 2024
+    AND EXTRACT(MONTH FROM j.Tanggal) BETWEEN 1 AND 6
+    AND MOD(p.ProduksiID, 2) = 0
+),
+penjualan_aggregated AS (
+  SELECT 
+    ProdukID,
+    SUM(Jumlah) AS total_penjualan
+  FROM 
+    penjualan_filtered
+  GROUP BY 
+    ProdukID
+)
+SELECT 
+  ProdukID,
+  total_penjualan
+FROM 
+  penjualan_aggregated
+ORDER BY 
+  total_penjualan DESC
+LIMIT 1;
